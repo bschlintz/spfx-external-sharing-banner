@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "banner-application-customizer": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/banner/BannerApplicationCustomizer.js",
+          "manifest": "./src/extensions/banner/BannerApplicationCustomizer.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "BannerApplicationCustomizerStrings": "lib/extensions/banner/loc/{locale}.js"
+  }
+}

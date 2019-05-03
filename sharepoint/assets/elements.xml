@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+    <CustomAction
+        Title="ExternalSharingBanner"
+        Location="ClientSideExtension.ApplicationCustomizer"
+        ClientSideComponentId="a36a1b3a-d816-46d0-8506-6ff3c68bef83"
+        ClientSideComponentProperties="{ &quot;externalSharingText&quot;: &quot;This site contains content which is viewable by external users&quot;, &quot;textColor&quot;: &quot;#333&quot;, &quot;backgroundColor&quot;: &quot;#ffffc6&quot;, &quot;cacheEnabled&quot;: true, &quot;cacheLifetimeMins&quot;: 15 }">
+    </CustomAction>
+</Elements>

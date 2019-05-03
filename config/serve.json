@@ -1,0 +1,22 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/core-build/serve.schema.json",
+  "port": 4321,
+  "https": true,
+  "serveConfigurations": {
+    "default": {
+      "pageUrl": "https://contoso.sharepoint.com/sites/mySite/SitePages/myPage.aspx",
+      "customActions": {
+        "a36a1b3a-d816-46d0-8506-6ff3c68bef83": {
+          "location": "ClientSideExtension.ApplicationCustomizer",
+          "properties": {
+            "externalSharingText": "This site has been shared with external users",
+            "textColor": "#333",
+            "backgroundColor": "#ffffc6",
+            "cacheEnabled": false,
+            "cacheLifetimeMins": 15
+          }
+        }
+      }
+    }
+  }
+}

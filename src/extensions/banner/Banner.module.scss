@@ -1,0 +1,14 @@
+.BannerTextContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: height 250ms;
+  flex: 1;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.BannerTextContainerExpand {
+  height: 30px !important;
+  border-bottom: 1px solid #eaeaea;
+}
