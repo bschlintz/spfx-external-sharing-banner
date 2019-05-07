@@ -9,11 +9,12 @@
         "a36a1b3a-d816-46d0-8506-6ff3c68bef83": {
           "location": "ClientSideExtension.ApplicationCustomizer",
           "properties": {
-            "externalSharingText": "This site has been shared with external users",
+            "externalSharingText": "This site contains <a href='{siteurl}/_layouts/15/siteanalytics.aspx'>content which is viewable by external users</a>",
             "textColor": "#333",
             "backgroundColor": "#ffffc6",
             "cacheEnabled": false,
-            "cacheLifetimeMins": 15
+            "cacheLifetimeMins": 15,
+            "scope": "site"
           }
         }
       }

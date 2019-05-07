@@ -17,14 +17,16 @@ export interface IBannerApplicationCustomizerProperties {
   backgroundColor: string;
   cacheEnabled: boolean;
   cacheLifetimeMins: number;
+  scope: 'site' | 'web';
 }
 
 const DEFAULT_PROPERTIES: IBannerApplicationCustomizerProperties = {
-  externalSharingText: "This site contains content which is viewable by external users",
+  externalSharingText: "This site contains <a href='{siteurl}/_layouts/15/siteanalytics.aspx'>content which is viewable by external users</a>",
   textColor: "#333",
   backgroundColor: "#ffffc6",
   cacheEnabled: true,
-  cacheLifetimeMins: 15
+  cacheLifetimeMins: 15,
+  scope: 'site',
 };
 
 /** A Custom Action which can be run during execution of a Client Side Application */
@@ -72,23 +74,26 @@ export default class BannerApplicationCustomizer
    * Get external sharing status for the current site collection from cache or REST API
    */
   private async getExternalSharingStatus(): Promise<boolean> {
-    const { cacheLifetimeMins } = this._extensionProperties;
+    const { cacheLifetimeMins, scope } = this._extensionProperties;
     const siteId = this.context.pageContext.site.id.toString();
+    const webId = this.context.pageContext.web.id.toString();
+    const isWebScope = scope === 'web';
+    const cacheSubKey = isWebScope ? `${webId}_web` : `${siteId}_site`;
 
     // Check cache if it is enabled
     if (this._extensionProperties.cacheEnabled) {
-      const cache = this.cacheGet(CACHE_KEY, siteId);
+      const cache = this.cacheGet(CACHE_KEY, cacheSubKey);
       if (null !== cache && undefined !== cache.isExternalSharingEnabled) {
         return cache.isExternalSharingEnabled;
       }
     }
 
     try {
-      const isExternalSharingEnabled: boolean = await this.fetchExternalSharingStatus(siteId);
+      const isExternalSharingEnabled: boolean = await this.fetchExternalSharingStatus(isWebScope ? webId : siteId, isWebScope);
 
       // Check if cache is enabled, then cache result for the site with specified cache lifetime in minutes
       if (this._extensionProperties.cacheEnabled) {
-        this.cacheSet(CACHE_KEY, siteId, { isExternalSharingEnabled }, (1000 * 60 * cacheLifetimeMins));
+        this.cacheSet(CACHE_KEY, cacheSubKey, { isExternalSharingEnabled }, (1000 * 60 * cacheLifetimeMins));
       }
 
       return isExternalSharingEnabled;
@@ -102,15 +107,17 @@ export default class BannerApplicationCustomizer
 
   /**
    * Fetch external sharing status from Search REST API by checking if any content exists on the site that is viewable by external users
-   * @param siteId Unique ID of the site
+   * @param siteOrWebId Unique ID of the site or web
+   * @param isWebScope Specify whether to retrieve the web-scoped or site-scoped external sharing status
    */
-  private async fetchExternalSharingStatus(siteId: string): Promise<boolean> {
+  private async fetchExternalSharingStatus(siteOrWebId: string, isWebScope: boolean = false): Promise<boolean> {
     try {
       // Construct search query using PnP SP
-      // Use HiddenConstraints so we don't clutter native search analytics
+      // Use Querytemplate so we don't clutter native search analytics
+      const siteOrWebFilter = isWebScope ? `WebId:"${siteOrWebId}"` : `SiteId:"${siteOrWebId}"`;
       const searchQuery: SearchQuery = {
         Querytext: '*',
-        QueryTemplate: `{searchterms} SiteId:"${siteId}" (ViewableByExternalUsers:1 OR ViewableByAnonymousUsers:1)`,
+        QueryTemplate: `{searchterms} ${siteOrWebFilter} (ViewableByExternalUsers:1 OR ViewableByAnonymousUsers:1)`,
         SelectProperties: ['Title', 'SiteID', 'ViewableByExternalUsers'],
         ClientType: 'Custom',
         RowLimit: 1
@@ -146,7 +153,7 @@ export default class BannerApplicationCustomizer
       this._topPlaceholder.domElement.innerHTML = `
         <div style="background-color: ${backgroundColor};">
           <div class="${styles.BannerTextContainer}" style="height:0px;">
-            <span style="color: ${textColor};">${externalSharingText}</span>
+            <span style="color: ${textColor};">${this.parseTokens(externalSharingText)}</span>
           </div>
         </div>
       `;
@@ -200,7 +207,8 @@ export default class BannerApplicationCustomizer
     try {
       const nowTicks = Date.now();
       const expiration = (expiresIn && nowTicks + expiresIn) || null;
-      let cache = this.cacheGet(cacheKey, cacheSubKey) || {};
+      const valueStr = sessionStorage.getItem(cacheKey) || "{}";
+      let cache = JSON.parse(valueStr);
       cache[cacheSubKey] = { payload, expiration };
       sessionStorage.setItem(cacheKey, JSON.stringify(cache));
       return this.cacheGet(cacheKey, cacheSubKey);
@@ -209,6 +217,19 @@ export default class BannerApplicationCustomizer
       Log.warn(LOG_SOURCE, `Unable to set cached data into sessionStorage with key ${cacheKey}. Error: ${error}`);
       return null;
     }
+  }
+
+  private parseTokens = (textWithTokens: string): string => {
+    const tokens = [
+      { token: '{siteurl}', value: this.context.pageContext.site.absoluteUrl },
+      { token: '{weburl}', value: this.context.pageContext.web.absoluteUrl },
+    ];
+
+    const outputText = tokens.reduce((text, tokenItem) => {
+      return text.replace(tokenItem.token, tokenItem.value);
+    }, textWithTokens);
+
+    return outputText;
   }
 
   // Old way used to check the ViewableByExternalUsers property on the site result which appeared to be inconsisent

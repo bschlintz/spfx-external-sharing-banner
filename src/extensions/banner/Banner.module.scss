@@ -6,6 +6,17 @@
   flex: 1;
   font-weight: 600;
   font-size: 14px;
+  cursor: default;
+
+  a, a:link, a:visited, a:hover, a:active {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }
 
 .BannerTextContainerExpand {
