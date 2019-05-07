@@ -109,7 +109,8 @@ export default class BannerApplicationCustomizer
       // Construct search query using PnP SP
       // Use HiddenConstraints so we don't clutter native search analytics
       const searchQuery: SearchQuery = {
-        HiddenConstraints: `ViewableByExternalUsers:true AND SiteID:${siteId}`,
+        Querytext: '*',
+        QueryTemplate: `{searchterms} SiteId:"${siteId}" (ViewableByExternalUsers:1 OR ViewableByAnonymousUsers:1)`,
         SelectProperties: ['Title', 'SiteID', 'ViewableByExternalUsers'],
         ClientType: 'Custom',
         RowLimit: 1
