@@ -78,7 +78,7 @@ export default class BannerApplicationCustomizer
     const siteId = this.context.pageContext.site.id.toString();
     const webId = this.context.pageContext.web.id.toString();
     const isWebScope = scope === 'web';
-    const cacheSubKey = isWebScope ? `${webId}_web` : `${siteId}_site`;
+    const cacheSubKey = `${siteId}_site${isWebScope ? `${webId}_web`: ``}`;
 
     // Check cache if it is enabled
     if (this._extensionProperties.cacheEnabled) {
@@ -89,10 +89,10 @@ export default class BannerApplicationCustomizer
     }
 
     try {
-      const isExternalSharingEnabled: boolean = await this.fetchExternalSharingStatus(isWebScope ? webId : siteId, isWebScope);
+      const isExternalSharingEnabled: boolean = await this.fetchExternalSharingStatus(siteId, isWebScope ? webId : undefined);
 
       // Check if cache is enabled, then cache result for the site with specified cache lifetime in minutes
-      if (this._extensionProperties.cacheEnabled) {
+      if (this. _extensionProperties.cacheEnabled) {
         this.cacheSet(CACHE_KEY, cacheSubKey, { isExternalSharingEnabled }, (1000 * 60 * cacheLifetimeMins));
       }
 
@@ -107,17 +107,31 @@ export default class BannerApplicationCustomizer
 
   /**
    * Fetch external sharing status from Search REST API by checking if any content exists on the site that is viewable by external users
-   * @param siteOrWebId Unique ID of the site or web
-   * @param isWebScope Specify whether to retrieve the web-scoped or site-scoped external sharing status
+   * @param siteId Unique ID of the site
+   * @param webId Optionally, get external sharing status for one web within a site
    */
-  private async fetchExternalSharingStatus(siteOrWebId: string, isWebScope: boolean = false): Promise<boolean> {
+  private async fetchExternalSharingStatus(siteId: string, webId?: string): Promise<boolean> {
     try {
       // Construct search query using PnP SP
       // Use Querytemplate so we don't clutter native search analytics
-      const siteOrWebFilter = isWebScope ? `WebId:"${siteOrWebId}"` : `SiteId:"${siteOrWebId}"`;
+      const queryTemplateConditions = [
+        `{searchterms}`,
+        `SiteId:"${siteId}"`,
+        `${webId ? `WebId:"${webId}"` : ``}`,
+        `(ViewableByExternalUsers:1 OR ViewableByAnonymousUsers:1)`,
+        `(IsDocument:1 OR ContentTypeId:0x010100* OR ContentTypeId:0x0120*)`,
+        `-SecondaryFileExtension=one NOT IsOneNotePage=1`,
+        `-ContentClass=STS_ListItem_GenericList`,
+        `-ContentClass=STS_List_*`,
+        `-ContentClass=STS_Site`,
+        `-ContentClass=STS_Web`,
+        `-ContentClass=STS_ListItem_544`,
+        `-ContentClass=STS_ListItem_550`
+      ];
+
       const searchQuery: SearchQuery = {
         Querytext: '*',
-        QueryTemplate: `{searchterms} ${siteOrWebFilter} (ViewableByExternalUsers:1 OR ViewableByAnonymousUsers:1)`,
+        QueryTemplate: queryTemplateConditions.join(' '),
         SelectProperties: ['Title', 'SiteID', 'ViewableByExternalUsers'],
         ClientType: 'Custom',
         RowLimit: 1
