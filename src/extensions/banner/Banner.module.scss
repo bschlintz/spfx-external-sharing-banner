@@ -5,8 +5,8 @@
   transition: height 250ms;
   flex: 1;
   font-weight: 600;
-  font-size: 14px;
   cursor: default;
+  height: 0px;
 
   a, a:link, a:visited, a:hover, a:active {
     color: inherit;
@@ -20,6 +20,5 @@
 }
 
 .BannerTextContainerExpand {
-  height: 30px !important;
   border-bottom: 1px solid #eaeaea;
 }

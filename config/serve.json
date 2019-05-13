@@ -12,7 +12,9 @@
             "externalSharingText": "This site contains <a href='{siteurl}/_layouts/15/siteanalytics.aspx'>content which is viewable by external users</a>",
             "textColor": "#333",
             "backgroundColor": "#ffffc6",
-            "cacheEnabled": false,
+            "textFontSizePx": 14,
+            "bannerHeightPx": 50,
+            "cacheEnabled": true,
             "cacheLifetimeMins": 15,
             "scope": "site"
           }

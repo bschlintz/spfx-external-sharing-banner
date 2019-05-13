@@ -15,6 +15,8 @@ export interface IBannerApplicationCustomizerProperties {
   externalSharingText: string;
   textColor: string;
   backgroundColor: string;
+  textFontSizePx: number;
+  bannerHeightPx: number;
   cacheEnabled: boolean;
   cacheLifetimeMins: number;
   scope: 'site' | 'web';
@@ -24,6 +26,8 @@ const DEFAULT_PROPERTIES: IBannerApplicationCustomizerProperties = {
   externalSharingText: "This site contains <a href='{siteurl}/_layouts/15/siteanalytics.aspx'>content which is viewable by external users</a>",
   textColor: "#333",
   backgroundColor: "#ffffc6",
+  textFontSizePx: 14,
+  bannerHeightPx: 30,
   cacheEnabled: true,
   cacheLifetimeMins: 15,
   scope: 'site',
@@ -151,7 +155,7 @@ export default class BannerApplicationCustomizer
    * Render the 'content viewable by external users' banner on the current page
    */
   private renderBanner(): void {
-    const { externalSharingText, backgroundColor, textColor } = this._extensionProperties;
+    const { externalSharingText, backgroundColor, textColor, textFontSizePx, bannerHeightPx } = this._extensionProperties;
 
     if (!this._topPlaceholder) {
       this._topPlaceholder = this.context.placeholderProvider.tryCreateContent(PlaceholderName.Top);
@@ -164,10 +168,14 @@ export default class BannerApplicationCustomizer
 
     //Only re-render banner if it isn't already showing
     if (!this._bannerIsShowing) {
+      const textStyles = [
+        `color: ${textColor};`,
+        `font-size: ${textFontSizePx}px;`
+      ];
       this._topPlaceholder.domElement.innerHTML = `
         <div style="background-color: ${backgroundColor};">
-          <div class="${styles.BannerTextContainer}" style="height:0px;">
-            <span style="color: ${textColor};">${this.parseTokens(externalSharingText)}</span>
+          <div class="${styles.BannerTextContainer}">
+            <span style="${textStyles.join(' ')}">${this.parseTokens(externalSharingText)}</span>
           </div>
         </div>
       `;
@@ -176,6 +184,7 @@ export default class BannerApplicationCustomizer
       setTimeout(() => {
         let elem = document.querySelector(`.${styles.BannerTextContainer}`);
         elem.className += ` ${styles.BannerTextContainerExpand}`;
+        elem.setAttribute('style', `height: ${bannerHeightPx}px !important;`);
         this._bannerIsShowing = true;
       }, 1);
     }
@@ -189,6 +198,7 @@ export default class BannerApplicationCustomizer
       //Animate collapse
       let elem = document.querySelector(`.${styles.BannerTextContainer}`);
       elem.className = elem.className.replace(` ${styles.BannerTextContainerExpand}`, '');
+      elem.removeAttribute('style');
     }
     this._bannerIsShowing = false;
   }
