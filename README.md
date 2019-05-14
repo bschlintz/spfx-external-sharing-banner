@@ -32,6 +32,8 @@ This solution is deployed using [Tenant Wide Extensions](https://docs.microsoft.
 | externalSharingText | `"This site contains <a href='{siteurl}/_layouts/15/siteanalytics.aspx'>content which is viewable by external users</a>"` | Text or HTML. Supports {siteurl} and {weburl} tokens. |
 | textColor | `"#333"` | Text color shown within the banner. |
 | backgroundColor | `"#ffffc6"` | Background color of the banner. |
+| textFontSizePx | `14` | Font size of the banner text in pixels. |
+| bannerHeightPx | `30` | Height of the banner in pixels. |
 | cacheEnabled | `true` | Enable or disable session cache. Cache is per site or web depending on configured scope. |
 | cacheLifetimeMins | `15` | Number of minutes session cache is valid before re-fetching from the Search REST API. |
 | scope | `"site"` | Site or Web scope is supported. |
