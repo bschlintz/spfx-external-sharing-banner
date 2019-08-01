@@ -4,6 +4,8 @@ Add a banner to your SharePoint Online modern sites indicating whether the site 
 
 Built using a SharePoint Framework Application Customizer Extension with the Top placeholder. Indication of a site being shared with external users is driven via SharePoint Search REST API.
 
+![External Sharing Banner Screenshot](./docs/BannerScreenshot.png)
+
 ## Setup Instructions
 ### Pre-requisites
 - App Catalog: Ensure the [App Catalog](https://docs.microsoft.com/en-us/sharepoint/use-app-catalog) is setup in your SharePoint Online tenant
