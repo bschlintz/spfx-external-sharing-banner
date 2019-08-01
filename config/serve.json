@@ -16,7 +16,8 @@
             "bannerHeightPx": 50,
             "cacheEnabled": true,
             "cacheLifetimeMins": 15,
-            "scope": "site"
+            "scope": "site",
+            "hiddenForExternalUsers": true
           }
         }
       }

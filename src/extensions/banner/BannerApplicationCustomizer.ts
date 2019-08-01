@@ -20,6 +20,7 @@ export interface IBannerApplicationCustomizerProperties {
   cacheEnabled: boolean;
   cacheLifetimeMins: number;
   scope: 'site' | 'web';
+  hiddenForExternalUsers: boolean;
 }
 
 const DEFAULT_PROPERTIES: IBannerApplicationCustomizerProperties = {
@@ -31,6 +32,7 @@ const DEFAULT_PROPERTIES: IBannerApplicationCustomizerProperties = {
   cacheEnabled: true,
   cacheLifetimeMins: 15,
   scope: 'site',
+  hiddenForExternalUsers: true
 };
 
 /** A Custom Action which can be run during execution of a Client Side Application */
@@ -51,6 +53,12 @@ export default class BannerApplicationCustomizer
 
       // Merge passed properties with default properties, overriding any defaults
       this._extensionProperties = { ...DEFAULT_PROPERTIES, ...this.properties };
+
+      // Don't show banner if the current user is an external user and the hiddenForExternalUsers config setting is enabled
+      const isExternalUser = this.getIsExternalUser();
+      if (isExternalUser && this._extensionProperties.hiddenForExternalUsers) {
+        return;
+      }
 
       // Event handler to re-render banner on each page navigation (detect if we change sites)
       this.context.application.navigatedEvent.add(this, this.onNavigated);
@@ -149,6 +157,13 @@ export default class BannerApplicationCustomizer
       Log.error(LOG_SOURCE, new Error(`Failed to retrieve data from search REST API. Error: ${error}`));
       return false;
     }
+  }
+
+  /**
+   * Check if the current user is an external user
+   */
+  private getIsExternalUser(): boolean {
+    return this.context.pageContext.user.isExternalGuestUser || this.context.pageContext.user.isAnonymousGuestUser;
   }
 
   /**
@@ -255,30 +270,4 @@ export default class BannerApplicationCustomizer
 
     return outputText;
   }
-
-  // Old way used to check the ViewableByExternalUsers property on the site result which appeared to be inconsisent
-  // private async fetchExternalSharingStatus(siteId: string): Promise<boolean> {
-  //   try {
-  //     // Construct search query using PnP SP
-  //     // Use HiddenConstraints so we don't clutter native search analytics
-  //     const searchQuery: SearchQuery = {
-  //       HiddenConstraints: `ContentClass:STS_Site AND SiteID:${siteId}`,
-  //       SelectProperties: ['SiteID', 'ViewableByExternalUsers'],
-  //       ClientType: 'Custom',
-  //       RowLimit: 1
-  //     };
-  //     const results: SearchResults = await sp.search(searchQuery);
-
-  //     // Check if we got one result back for the current site
-  //     let isExternalSharingEnabled;
-  //     if (results.PrimarySearchResults.length === 1) {
-  //       isExternalSharingEnabled = results.PrimarySearchResults[0]["ViewableByExternalUsers"] === "true";
-  //     }
-  //     return undefined !== isExternalSharingEnabled ? isExternalSharingEnabled : false;
-  //   }
-  //   catch (error) {
-  //     Log.error(LOG_SOURCE, new Error(`Failed to retrieve data from search REST API. Error: ${error}`));
-  //     return false;
-  //   }
-  // }
 }
