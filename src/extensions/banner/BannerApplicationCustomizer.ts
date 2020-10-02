@@ -146,7 +146,9 @@ export default class BannerApplicationCustomizer
         QueryTemplate: queryTemplateConditions.join(' '),
         SelectProperties: ['Title', 'SiteID', 'ViewableByExternalUsers'],
         ClientType: 'Custom',
-        RowLimit: 1
+        RowLimit: 1,
+        EnableQueryRules: false,
+        SourceId: '8413cd39-2156-4e00-b54d-11efd9abdb89' // Local SharePoint Results
       };
       const results: SearchResults = await sp.search(searchQuery);
 
