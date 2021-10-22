@@ -57,8 +57,9 @@ export default class BannerApplicationCustomizer
       this._extensionProperties = { ...DEFAULT_PROPERTIES, ...this.properties };
 
        // Don't show banner if the site is in the siteExclusionList config setting
+       this._extensionProperties.siteExclusionList = this._extensionProperties.siteExclusionList.map(site => site.toLowerCase());
        let url = this._extensionProperties.scope === 'web' ? this.context.pageContext.web.absoluteUrl : this.context.pageContext.site.absoluteUrl;
-       if(this._extensionProperties.siteExclusionList.includes(url)){
+       if(this._extensionProperties.siteExclusionList.includes(url.toLowerCase())){
          return;
        }
        
