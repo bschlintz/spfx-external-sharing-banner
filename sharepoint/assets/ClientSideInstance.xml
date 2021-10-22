@@ -4,6 +4,6 @@
         Title="ExternalSharingBanner"
         Location="ClientSideExtension.ApplicationCustomizer"
         ComponentId="a36a1b3a-d816-46d0-8506-6ff3c68bef83"
-        Properties="{ &quot;externalSharingText&quot;: &quot;This site contains &lt;a href=&apos;{siteurl}/_layouts/15/siteanalytics.aspx&apos;&gt;content which is viewable by external users&lt;/a&gt;&quot;, &quot;textColor&quot;: &quot;#333&quot;, &quot;backgroundColor&quot;: &quot;#ffffc6&quot;, &quot;textFontSizePx&quot;: 14, &quot;bannerHeightPx&quot;: 30, &quot;cacheEnabled&quot;: true, &quot;cacheLifetimeMins&quot;: 15, &quot;scope&quot;: &quot;site&quot;, &quot;hiddenForExternalUsers&quot;: true }">
+        Properties="{ &quot;externalSharingText&quot;: &quot;This site contains &lt;a href=&apos;{siteurl}/_layouts/15/siteanalytics.aspx&apos;&gt;content which is viewable by external users&lt;/a&gt;&quot;, &quot;textColor&quot;: &quot;#333&quot;, &quot;backgroundColor&quot;: &quot;#ffffc6&quot;, &quot;textFontSizePx&quot;: 14, &quot;bannerHeightPx&quot;: 30, &quot;cacheEnabled&quot;: true, &quot;cacheLifetimeMins&quot;: 15, &quot;scope&quot;: &quot;site&quot;, &quot;hiddenForExternalUsers&quot;: true, &quot;siteExclusionList&quot;: [] }">
     </ClientSideComponentInstance>
 </Elements>

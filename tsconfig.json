@@ -23,9 +23,9 @@
       "webpack-env"
     ],
     "lib": [
-      "es5",
+      "es6",
       "dom",
-      "es2015.collection"
+      "es2017"
     ]
   },
   "include": [

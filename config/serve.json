@@ -17,7 +17,8 @@
             "cacheEnabled": true,
             "cacheLifetimeMins": 15,
             "scope": "site",
-            "hiddenForExternalUsers": true
+            "hiddenForExternalUsers": true,
+            "siteExclusionList" : ["https://contoso.sharepoint.com/mySite", "https://contoso.sharepoint.com/ExcludedSite"]
           }
         }
       }

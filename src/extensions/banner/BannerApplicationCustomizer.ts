@@ -21,6 +21,7 @@ export interface IBannerApplicationCustomizerProperties {
   cacheLifetimeMins: number;
   scope: 'site' | 'web';
   hiddenForExternalUsers: boolean;
+  siteExclusionList: Array<string>;
 }
 
 const DEFAULT_PROPERTIES: IBannerApplicationCustomizerProperties = {
@@ -32,7 +33,8 @@ const DEFAULT_PROPERTIES: IBannerApplicationCustomizerProperties = {
   cacheEnabled: true,
   cacheLifetimeMins: 15,
   scope: 'site',
-  hiddenForExternalUsers: true
+  hiddenForExternalUsers: true,
+  siteExclusionList: []
 };
 
 /** A Custom Action which can be run during execution of a Client Side Application */
@@ -54,6 +56,13 @@ export default class BannerApplicationCustomizer
       // Merge passed properties with default properties, overriding any defaults
       this._extensionProperties = { ...DEFAULT_PROPERTIES, ...this.properties };
 
+       // Don't show banner if the site is in the siteExclusionList config setting
+       this._extensionProperties.siteExclusionList = this._extensionProperties.siteExclusionList.map(site => site.toLowerCase());
+       let url = this._extensionProperties.scope === 'web' ? this.context.pageContext.web.absoluteUrl : this.context.pageContext.site.absoluteUrl;
+       if(this._extensionProperties.siteExclusionList.includes(url.toLowerCase())){
+         return;
+       }
+       
       // Don't show banner if the current user is an external user and the hiddenForExternalUsers config setting is enabled
       const isExternalUser = this.getIsExternalUser();
       if (isExternalUser && this._extensionProperties.hiddenForExternalUsers) {

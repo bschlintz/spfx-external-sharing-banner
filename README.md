@@ -40,6 +40,7 @@ This solution is deployed using [Tenant Wide Extensions](https://docs.microsoft.
 | cacheLifetimeMins | `15` | Number of minutes session cache is valid before re-fetching from the Search REST API. |
 | scope | `"site"` | Site or Web scope is supported. |
 | hiddenForExternalUsers | `true` | Toggle whether to display the banner to external users. |
+| siteExclusionList | `[]` | An array of sites where the banner will not be rendered. |
 
 ## Disclaimer
 
